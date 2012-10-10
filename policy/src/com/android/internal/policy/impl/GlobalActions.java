@@ -53,6 +53,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +89,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mHasVibrator;
 
     private IWindowManager mIWindowManager;
+
+    private static int rebootIndex = 0;
+
 
     /**
      * @param context everything needs a context :(
@@ -223,6 +227,28 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
+
+        // next: reboot
+        mItems.add(
+                new SinglePressAction(
+                        com.android.internal.R.drawable.ic_lock_reboot,
+                        com.android.internal.R.string.global_action_reboot) {
+                     @Override
+                    public boolean showDuringKeyguard() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean showBeforeProvisioning() {
+                        return true;
+                    }
+
+                    @Override
+                    public void onPress() {
+                        createRebootDialog().show();
+                    }
+                });
+
 
         // next: airplane mode
         mItems.add(mAirplaneModeOn);
@@ -815,5 +841,39 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mIWindowManager = IWindowManager.Stub.asInterface(b);
         }
         return mIWindowManager;
+    }
+    private AlertDialog createRebootDialog() {
+        final String[] rebootOptions = mContext.getResources().getStringArray(R.array.shutdown_reboot_options);
+        final String[] rebootReasons = mContext.getResources().getStringArray(R.array.shutdown_reboot_actions);
+
+        AlertDialog d = new AlertDialog.Builder(mContext)
+     		 .setIcon(android.R.drawable.ic_dialog_alert)
+                 .setTitle(com.android.internal.R.string.reboot_system)
+                 .setSingleChoiceItems(rebootOptions, 0,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                rebootIndex = which;
+                            }
+                        })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    	dialog.dismiss();
+                    }
+                })
+                .setPositiveButton(R.string.global_action_reboot, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mWindowManagerFuncs.reboot(rebootReasons[rebootIndex]);
+                    }
+                }).create();
+
+        d.getListView().setItemsCanFocus(true);
+        d.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+
+        return d;
     }
 }

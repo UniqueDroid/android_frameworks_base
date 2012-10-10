@@ -426,14 +426,6 @@ public abstract class DataConnection extends StateMachine {
     }
 
     /**
-     * set retry manager retryCount
-     */
-    public void setRetryCount(int retryCount) {
-        if (DBG) log("setRetryCount: " + retryCount);
-        mRetryMgr.setRetryCount(retryCount);
-    }
-
-    /**
      * @return retry manager retryTimer
      */
     public int getRetryTimer() {
