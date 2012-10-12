@@ -44,6 +44,7 @@
     <!-- Whether or not we show the number in the bar. 
     <bool name="config_statusBarShowNumber">false</bool>
     -->
+
     <!-- How many icons may be shown at once in the system bar. Includes any
          slots that may be reused for things like IME control. -->
     <integer name="config_maxNotificationIcons">5</integer>
@@ -65,5 +66,8 @@
 
     <!-- Vibration duration for MultiWaveView used in SearchPanelView -->
     <integer translatable="false" name="config_search_panel_view_vibration_duration">20</integer>
+
+    <!-- The length of the vibration when the notificaiotn pops open. -->
+    <integer name="blinds_pop_duration_ms">10</integer>
 </resources>
 
